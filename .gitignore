@@ -1,0 +1,8 @@
+backend/node_modules/
+backend/.env
+backend/.git/
+.backend-git-backup/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store

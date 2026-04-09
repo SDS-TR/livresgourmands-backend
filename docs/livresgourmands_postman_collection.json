@@ -1,0 +1,143 @@
+{
+  "info": {
+    "name": "livresgourmands backend API",
+    "_postman_id": "d5f4d0e3-3f67-4d26-b70d-0d6d08c62111",
+    "description": "Collection Postman pour tester l'API livresgourmands. Les requetes de login sauvegardent automatiquement les JWT dans les variables de collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" },
+    { "key": "clientToken", "value": "" },
+    { "key": "editorToken", "value": "" },
+    { "key": "managerToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "ouvrageId", "value": "1" },
+    { "key": "categorieId", "value": "1" },
+    { "key": "panierItemId", "value": "1" },
+    { "key": "commandeId", "value": "1" },
+    { "key": "listeId", "value": "1" },
+    { "key": "listeCode", "value": "ABC123DEF456GH78" },
+    { "key": "commentaireId", "value": "1" },
+    { "key": "clientUserId", "value": "2" }
+  ],
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        { "name": "API Index", "request": { "method": "GET", "url": "{{baseUrl}}" } },
+        { "name": "Healthcheck", "request": { "method": "GET", "url": "http://localhost:3000/health" } },
+        { "name": "Get Categories", "request": { "method": "GET", "url": "{{baseUrl}}/categories" } },
+        { "name": "Get Ouvrages", "request": { "method": "GET", "url": "{{baseUrl}}/ouvrages" } },
+        { "name": "Search Ouvrages", "request": { "method": "GET", "url": "{{baseUrl}}/ouvrages?q=patisserie&sort=popularite" } },
+        { "name": "Get Ouvrage By Id", "request": { "method": "GET", "url": "{{baseUrl}}/ouvrages/{{ouvrageId}}" } },
+        { "name": "Get Liste By Code", "request": { "method": "GET", "url": "{{baseUrl}}/listes/{{listeCode}}" } },
+        { "name": "Acheter Depuis Liste", "request": { "method": "POST", "url": "{{baseUrl}}/listes/{{listeId}}/acheter" } }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Client",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Bonjour123\",\n  \"telephone\": \"123456789\",\n  \"adresse\": \"Montreal\"\n}" },
+            "url": "{{baseUrl}}/auth/register"
+          }
+        },
+        {
+          "name": "Login Client",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const data = pm.response.json();", "if (data.token) pm.collectionVariables.set('clientToken', data.token);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"marie@example.com\",\n  \"password\": \"Client123!\"\n}" },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Editeur",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const data = pm.response.json();", "if (data.token) pm.collectionVariables.set('editorToken', data.token);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"sophie@example.com\",\n  \"password\": \"Editeur123!\"\n}" },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Gestionnaire",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const data = pm.response.json();", "if (data.token) pm.collectionVariables.set('managerToken', data.token);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"jean@example.com\",\n  \"password\": \"Gest123!\"\n}" },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["const data = pm.response.json();", "if (data.token) pm.collectionVariables.set('adminToken', data.token);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@livresgourmands.net\",\n  \"password\": \"Admin123!\"\n}" },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Get My Profile", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }], "url": "{{baseUrl}}/users/me" } },
+        { "name": "Get All Users - Admin", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/users" } },
+        { "name": "Update My Profile", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Marie\",\n  \"prenom\": \"Dupont\",\n  \"telephone\": \"5140000000\",\n  \"adresse\": \"Montreal\"\n}" }, "url": "{{baseUrl}}/users/{{clientUserId}}" } }
+      ]
+    },
+    {
+      "name": "Catalogue",
+      "item": [
+        { "name": "Create Category - Editeur", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{editorToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Fermentation\",\n  \"description\": \"Recettes et techniques de fermentation\"\n}" }, "url": "{{baseUrl}}/categories" } },
+        { "name": "Update Category - Editeur", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{editorToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Patisserie Fine\",\n  \"description\": \"Selection premium et recettes techniques\"\n}" }, "url": "{{baseUrl}}/categories/{{categorieId}}" } },
+        { "name": "Delete Category - Gestionnaire", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": "{{baseUrl}}/categories/{{categorieId}}" } },
+        { "name": "Create Ouvrage - Gestionnaire", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"titre\": \"Cuisine Nordique\",\n  \"auteur\": \"Lars Eriksson\",\n  \"isbn\": \"978-2-01-000010-0\",\n  \"description\": \"Recettes scandinaves modernes\",\n  \"prix\": 39.95,\n  \"stock\": 10,\n  \"categorie_id\": 2\n}" }, "url": "{{baseUrl}}/ouvrages" } },
+        { "name": "Update Ouvrage - Gestionnaire", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"titre\": \"Le Grand Livre de la Patisserie\",\n  \"auteur\": \"Lenotre\",\n  \"isbn\": \"978-2-01-000001-1\",\n  \"description\": \"Edition mise a jour\",\n  \"prix\": 52,\n  \"stock\": 20,\n  \"categorie_id\": 1\n}" }, "url": "{{baseUrl}}/ouvrages/{{ouvrageId}}" } },
+        { "name": "Delete Ouvrage - Admin", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/ouvrages/{{ouvrageId}}" } }
+      ]
+    },
+    {
+      "name": "Panier et Commandes",
+      "item": [
+        { "name": "Get Panier", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }], "url": "{{baseUrl}}/panier" } },
+        { "name": "Add Item To Panier", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ouvrage_id\": 1,\n  \"quantite\": 2\n}" }, "url": "{{baseUrl}}/panier/items" } },
+        { "name": "Update Panier Item", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"quantite\": 3\n}" }, "url": "{{baseUrl}}/panier/items/{{panierItemId}}" } },
+        { "name": "Delete Panier Item", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }], "url": "{{baseUrl}}/panier/items/{{panierItemId}}" } },
+        { "name": "Create Commande", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"adresse_livraison\": \"123 rue Sainte-Catherine, Montreal\",\n  \"mode_livraison\": \"standard\",\n  \"mode_paiement\": \"stripe\"\n}" }, "url": "{{baseUrl}}/commandes" } },
+        { "name": "Get Commandes - Client", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }], "url": "{{baseUrl}}/commandes" } },
+        { "name": "Get Commandes - Gestionnaire", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }], "url": "{{baseUrl}}/commandes" } },
+        { "name": "Get Commande By Id", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }], "url": "{{baseUrl}}/commandes/{{commandeId}}" } },
+        { "name": "Update Commande Statut - Gestionnaire", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{managerToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"statut\": \"expediee\"\n}" }, "url": "{{baseUrl}}/commandes/{{commandeId}}/status" } }
+      ]
+    },
+    {
+      "name": "Listes",
+      "item": [
+        { "name": "Create Liste", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nom\": \"Ma liste d'anniversaire\"\n}" }, "url": "{{baseUrl}}/listes" } },
+        { "name": "Get Mes Listes", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }], "url": "{{baseUrl}}/listes/mes-listes" } },
+        { "name": "Add Item To Liste", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ouvrage_id\": 2,\n  \"quantite_souhaitee\": 1\n}" }, "url": "{{baseUrl}}/listes/{{listeId}}/items" } }
+      ]
+    },
+    {
+      "name": "Avis et Commentaires",
+      "item": [
+        { "name": "Add Avis", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"note\": 5\n}" }, "url": "{{baseUrl}}/ouvrages/{{ouvrageId}}/avis" } },
+        { "name": "Add Commentaire", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{clientToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"contenu\": \"Excellent livre, tres clair et utile au quotidien.\"\n}" }, "url": "{{baseUrl}}/ouvrages/{{ouvrageId}}/commentaires" } },
+        { "name": "Get Commentaires Pending - Editeur", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{editorToken}}" }], "url": "{{baseUrl}}/commentaires/pending" } },
+        { "name": "Valider Commentaire - Editeur", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{editorToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"action\": \"valider\"\n}" }, "url": "{{baseUrl}}/commentaires/{{commentaireId}}/valider" } },
+        { "name": "Rejeter Commentaire - Editeur", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{editorToken}}" }, { "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"action\": \"rejeter\"\n}" }, "url": "{{baseUrl}}/commentaires/{{commentaireId}}/valider" } }
+      ]
+    }
+  ]
+}
